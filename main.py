@@ -42,10 +42,10 @@ METHODS = {
     'pattern.attribution': {'net_args': ['patterns'],
                             'f_visualize': imgnetutils.heatmap
                             },
-    'gradient': {#'analyzer_kwargs': {'postprocess': 'abs'},
+    'gradient': {#'kwargs': {'postprocess': 'abs'},
                  'f_visualize': imgnetutils.heatmap # imgnetutils.graymap #imgnetutils.bk_proj
                  },
-    'input_t_gradient': {#'analyzer_kwargs': {'postprocess': 'abs'},
+    'input_t_gradient': {#'kwargs': {'postprocess': 'abs'},
                          'f_visualize': imgnetutils.heatmap
                          },
     'pattern.net*gradient': {'f_visualize': imgnetutils.heatmap
@@ -74,8 +74,8 @@ def create_vgg16_model_and_analyzer(methods_metadata, analyzer_names=('input', '
             a_kwargs = {net_arg_name: net[net_arg_name] for net_arg_name in meta['net_args']}
         else:
             a_kwargs = {}
-        if 'analyzer_kwargs' in meta:
-            a_kwargs.update(meta['analyzer_kwargs'])
+        if 'kwargs' in meta:
+            a_kwargs.update(meta['kwargs'])
         if 'net_getter_kwargs' in meta:
             for arg_name in meta['net_getter_kwargs']:
                 arg_func = meta['net_getter_kwargs'][arg_name]
@@ -97,52 +97,6 @@ def create_vgg16_model_and_analyzer(methods_metadata, analyzer_names=('input', '
 
     return model, net, analyzers
 
-# not used
-def my_analyze_data(data, preprocess, label_to_class_name, model, analyzers):
-    for x, y in data:
-        true_class_name = label_to_class_name[y]
-        plt.imshow(x / 255)
-        plt.axis('off')
-        plt.show()
-
-        x = preprocess(x[None])
-
-        # get prediction
-        prob = model.predict_on_batch(x)[0]
-        y_hat = prob.argmax()
-        prediction_class_name = label_to_class_name[y_hat]
-        print('true: \t%s\nprediction: \t%s' % (true_class_name, prediction_class_name))
-
-        for analyzer_name, analyzer in analyzers:
-            if analyzer_name != 'input':
-                # Apply analyzer w.r.t. maximum activated output-neuron
-                a = analyzer.analyze(x)
-
-                # Aggregate along color channels and normalize to [-1, 1]
-                a = a.sum(axis=np.argmax(np.asarray(a.shape) == 3))
-                a /= np.max(np.abs(a))
-            else:
-                a = x
-            # Plot
-            plt.imshow(a[0], cmap="seismic", clim=(-1, 1))
-
-            #plt.axis('off')
-            #plt.savefig("readme_example_analysis.png")
-            ax = plt.gca()
-            ax.set_xlabel(
-                'true: %s\npred: %s' % (true_class_name, prediction_class_name),
-                #rotation=0,
-                #verticalalignment='bottom',
-                #horizontalalignment='center',
-            )
-            #ax.grid(False)
-            # Hide axes ticks
-            ax.set_xticks([])
-            ax.set_yticks([])
-
-        plt.show()
-        #print(a)
-
 
 # adapted from examples/notebook/imagenet_compare_methods.ipnb
 def analyze(data, analyzers, net, model, label_to_class_name):
@@ -162,7 +116,7 @@ def analyze(data, analyzers, net, model, label_to_class_name):
         x = x[None, :, :, :]
         x_pp = imgnetutils.preprocess(x, net)
 
-        # Predict final activations, probabilites, and label.
+        # Predict final activations, probabilities, and label.
         presm = model_wo_softmax.predict_on_batch(x_pp)[0]
         prob = model.predict_on_batch(x_pp)[0]
         y_hat = prob.argmax()
@@ -191,8 +145,6 @@ def analyze(data, analyzers, net, model, label_to_class_name):
                 a = a_subs[0]
                 for a_next in a_subs[1:]:
                     a = a * a_next
-                # restore method name to get correct f_visualize
-                method_name = '*'.join(method_name)
 
             elif analyzer:
                 # Analyze.
@@ -203,12 +155,6 @@ def analyze(data, analyzers, net, model, label_to_class_name):
 
             else:
                 a = np.zeros_like(x)
-
-            #if 'f_visualize' in METHODS[method_name]:
-            #    f_postproc = METHODS[method_name]['f_visualize']
-            #    a = f_postproc(a)
-            #else:
-            #    print('WARNING: no postprocessing set for %s' % method_name)
 
             # Store the analysis.
             analysis[i, aidx] = a[0]
