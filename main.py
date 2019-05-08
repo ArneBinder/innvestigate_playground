@@ -42,10 +42,10 @@ METHODS = {
     'pattern.attribution': {'net_args': ['patterns'],
                             'f_visualize': imgnetutils.heatmap
                             },
-    'gradient': {#'kwargs': {'postprocess': 'abs'},
+    'gradient': {'kwargs': {'postprocess': 'abs'},
                  'f_visualize': imgnetutils.heatmap # imgnetutils.graymap #imgnetutils.bk_proj
                  },
-    'input_t_gradient': {#'kwargs': {'postprocess': 'abs'},
+    'input_t_gradient': {'kwargs': {'postprocess': 'abs'},
                          'f_visualize': imgnetutils.heatmap
                          },
     'pattern.net*gradient': {'f_visualize': imgnetutils.heatmap
@@ -190,8 +190,8 @@ def visualize(analysis, text, method_names, methods_metadata):
 
     # Plot the analysis.
     utils.plot_image_grid(grid, row_labels_left, row_labels_right, col_labels,
-                        #file_name=os.environ.get("plot_file_name", None),
-                          file_name='test_analysis'
+                          #file_name=os.environ.get("plot_file_name", None),
+                          file_name=os.path.join('out', 'test_analysis')
                           )
 
 def main():
