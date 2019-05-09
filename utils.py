@@ -82,11 +82,12 @@ def plot_image_grid(grid,
                     col_labels,
                     file_name=None,
                     figsize=None,
-                    dpi=224):
+                    dpi=224,
+                    scaling=1.0):
     n_rows = len(grid)
     n_cols = len(grid[0])
     if figsize is None:
-        figsize = (n_cols, n_rows+1)
+        figsize = (n_cols*scaling, (n_rows+1)*scaling)
 
     plt.clf()
     plt.rc("font", family="sans-serif")

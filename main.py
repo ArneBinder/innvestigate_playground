@@ -53,12 +53,12 @@ METHODS = {
                             #'f_visualize': imgnetutils.bk_proj,
                             #'f_visualize':imgnetutils.graymap,
                             },
-    'gradient': {'kwargs': {'postprocess': 'abs'},
+    'gradient': {#'kwargs': {'postprocess': 'abs'},
                  #'f_visualize': imgnetutils.bk_proj,
                  # 'f_visualize': imgnetutils.heatmap,
                  #'f_visualize':imgnetutils.graymap,
                  },
-    'input_t_gradient': {'kwargs': {'postprocess': 'abs'},
+    'input_t_gradient': {#'kwargs': {'postprocess': 'abs'},
                          #'f_visualize': imgnetutils.bk_proj
                          #'f_visualize': imgnetutils.heatmap
                          #'f_visualize': imgnetutils.image,
@@ -188,7 +188,7 @@ def analyze(data, analyzers, net, model, label_to_class_name):
     return analysis, text
 
 # adapted from examples/notebook/imagenet_compare_methods.ipnb
-def visualize(analysis, text, method_names, visualization_transformations, file_name=None, figsize=None):
+def visualize(analysis, text, method_names, visualization_transformations, file_name=None, scaling=1.0):
     # Apply analysis postprocessing, e.g., creating a heatmap.
     #postprocess = {i: METHODS[method_name].get('visualize', lambda x: x) for i, method_name in enumerate(method_names)}
     # Prepare the grid as rectangular list
@@ -220,7 +220,8 @@ def visualize(analysis, text, method_names, visualization_transformations, file_
     utils.plot_image_grid(grid, row_labels_left, row_labels_right, col_labels,
                           #file_name=os.environ.get("plot_file_name", None),
                           file_name=file_name,
-                          figsize=figsize
+                          #figsize=figsize,
+                          scaling=scaling,
                           )
 
 def scale_max_batch(X, output_range=(0, 1), input_is_positive_only=False):
