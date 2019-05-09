@@ -1,3 +1,8 @@
 # IDE
 .idea
-out/
+
+# notebook checkpoints
+notebooks/.ipynb_checkpoints
+
+# visualizations
+out
